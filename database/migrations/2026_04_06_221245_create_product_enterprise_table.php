@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('product_enterprises', function (Blueprint $table) {
-            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
-            $table->foreign('enterprise_id')->references('id')->on('enterprises')->onDelete('cascade');
+        Schema::create('product_enterprise', function (Blueprint $table) {
+            $table->foreignId('product_id')->references('id')->on('products')->onDelete('cascade');
+            $table->foreignId('enterprise_id')->references('id')->on('enterprises')->onDelete('cascade');
 
             $table->primary(['product_id', 'enterprise_id']);
 
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('product_enterprises');
+        Schema::dropIfExists('product_enterprise');
     }
 };

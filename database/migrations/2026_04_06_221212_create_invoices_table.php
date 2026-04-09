@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('invoices', function (Blueprint $table) {
             $table->id();
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('enterprise_id')->references('id')->on('enterprises')->onDelete('cascade');
+
+            $table->foreignId('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreignId('enterprise_id')->references('id')->on('enterprises')->onDelete('cascade');
 
             $table->string('invoice_number');
             $table->text('observations')->nullable();

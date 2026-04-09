@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('invoice_products', function (Blueprint $table) {
-            $table->foreign('invoice_id')->references('id')->on('invoices')->onDelete('cascade');
-            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
+        Schema::create('invoice_product', function (Blueprint $table) {
+            $table->foreignId('invoice_id')->references('id')->on('invoices')->onDelete('cascade');
+            $table->foreignId('product_id')->references('id')->on('products')->onDelete('cascade');
 
             $table->primary(['invoice_id', 'product_id']);
 
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('invoice_products');
+        Schema::dropIfExists('invoice_product');
     }
 };
