@@ -3,8 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 
-class ProductEnterprise extends Model
+class ProductEnterprise extends Pivot
 {
     protected $fillable = [
         'product_id',
