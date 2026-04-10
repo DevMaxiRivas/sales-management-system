@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Enterprises\Pages;
 
+use App\Contracts\Enterprise\EnterpriseServiceInterface;
 use App\Filament\Resources\Enterprises\EnterpriseResource;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ForceDeleteAction;
@@ -10,6 +11,8 @@ use Filament\Resources\Pages\EditRecord;
 
 class EditEnterprise extends EditRecord
 {
+    public function __construct(protected EnterpriseServiceInterface $enterpriseService) {}
+
     protected static string $resource = EnterpriseResource::class;
 
     protected function getHeaderActions(): array
@@ -19,5 +22,10 @@ class EditEnterprise extends EditRecord
             ForceDeleteAction::make(),
             RestoreAction::make(),
         ];
+    }
+
+    protected function handleRecordUpdate(\Illuminate\Database\Eloquent\Model $record, array $data): \Illuminate\Database\Eloquent\Model
+    {
+        return $this->enterpriseService->updateEnterprise($record->getKey(), $data);
     }
 }
