@@ -10,7 +10,12 @@ use Filament\Resources\Pages\EditRecord;
 
 class EditProduct extends EditRecord
 {
-    public function __construct(protected ProductServiceInterface $productService) {}
+    protected ProductServiceInterface $productService;
+
+    public function boot(ProductServiceInterface $productService)
+    {
+        $this->productService = $productService;
+    }
 
     protected static string $resource = ProductResource::class;
 

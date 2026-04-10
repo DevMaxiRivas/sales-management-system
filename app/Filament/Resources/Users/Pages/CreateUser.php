@@ -8,7 +8,12 @@ use Filament\Resources\Pages\CreateRecord;
 
 class CreateUser extends CreateRecord
 {
-    public function __construct(protected UserServiceInterface $userService) {}
+    protected UserServiceInterface $userService;
+
+    public function boot(UserServiceInterface $userService)
+    {
+        $this->userService = $userService;
+    }
 
     protected static string $resource = UserResource::class;
 

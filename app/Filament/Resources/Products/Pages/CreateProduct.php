@@ -8,7 +8,12 @@ use Filament\Resources\Pages\CreateRecord;
 
 class CreateProduct extends CreateRecord
 {
-    public function __construct(protected ProductServiceInterface $productService) {}
+    protected ProductServiceInterface $productService;
+
+    public function boot(ProductServiceInterface $productService)
+    {
+        $this->productService = $productService;
+    }
 
     protected static string $resource = ProductResource::class;
 

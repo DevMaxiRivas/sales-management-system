@@ -8,7 +8,12 @@ use Filament\Resources\Pages\CreateRecord;
 
 class CreateEnterprise extends CreateRecord
 {
-    public function __construct(protected EnterpriseServiceInterface $enterpriseService) {}
+    protected EnterpriseServiceInterface $enterpriseService;
+
+    public function boot(EnterpriseServiceInterface $enterpriseService)
+    {
+        $this->enterpriseService = $enterpriseService;
+    }
 
     protected static string $resource = EnterpriseResource::class;
 

@@ -11,7 +11,12 @@ use Filament\Resources\Pages\EditRecord;
 
 class EditEnterprise extends EditRecord
 {
-    public function __construct(protected EnterpriseServiceInterface $enterpriseService) {}
+    protected EnterpriseServiceInterface $enterpriseService;
+
+    public function boot(EnterpriseServiceInterface $enterpriseService)
+    {
+        $this->enterpriseService = $enterpriseService;
+    }
 
     protected static string $resource = EnterpriseResource::class;
 

@@ -11,7 +11,12 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 
 class ListUsers extends ListRecords
 {
-    public function __construct(protected UserServiceInterface $userService) {}
+    protected UserServiceInterface $userService;
+
+    public function boot(UserServiceInterface $userService)
+    {
+        $this->userService = $userService;
+    }
 
     protected static string $resource = UserResource::class;
 

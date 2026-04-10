@@ -11,9 +11,14 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 
 class ListProducts extends ListRecords
 {
-    public function __construct(protected ProductServiceInterface $productService) {}
-
     protected static string $resource = ProductResource::class;
+
+    protected ProductServiceInterface $productService;
+
+    public function boot(ProductServiceInterface $productService)
+    {
+        $this->productService = $productService;
+    }
 
     protected function getHeaderActions(): array
     {

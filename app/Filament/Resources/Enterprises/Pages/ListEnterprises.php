@@ -11,7 +11,12 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 
 class ListEnterprises extends ListRecords
 {
-    public function __construct(protected EnterpriseServiceInterface $enterpriseService) {}
+    protected EnterpriseServiceInterface $enterpriseService;
+
+    public function boot(EnterpriseServiceInterface $enterpriseService)
+    {
+        $this->enterpriseService = $enterpriseService;
+    }
 
     protected static string $resource = EnterpriseResource::class;
 
