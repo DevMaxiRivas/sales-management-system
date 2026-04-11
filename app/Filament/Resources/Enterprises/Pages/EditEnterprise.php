@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Enterprises\Pages;
 
 use App\Contracts\Enterprise\EnterpriseServiceInterface;
 use App\Filament\Resources\Enterprises\EnterpriseResource;
+use App\Http\Requests\UpdateEnterpriseRequest;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\RestoreAction;
@@ -31,6 +32,13 @@ class EditEnterprise extends EditRecord
 
     protected function handleRecordUpdate(\Illuminate\Database\Eloquent\Model $record, array $data): \Illuminate\Database\Eloquent\Model
     {
-        return $this->enterpriseService->updateEnterprise($record->getKey(), $data);
+        $formRequest = new UpdateEnterpriseRequest();
+        $formRequest->merge($data);
+        $formRequest->setRouteResolver(function () use ($record) {
+            return $record;
+        });
+        $validated = $formRequest->validated();
+
+        return $this->enterpriseService->updateEnterprise($record->getKey(), $validated);
     }
 }

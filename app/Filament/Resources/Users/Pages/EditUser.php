@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Users\Pages;
 
 use App\Contracts\User\UserServiceInterface;
 use App\Filament\Resources\Users\UserResource;
+use App\Http\Requests\UpdateUserRequest;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\EditRecord;
@@ -29,6 +30,13 @@ class EditUser extends EditRecord
 
     protected function handleRecordUpdate(\Illuminate\Database\Eloquent\Model $record, array $data): \Illuminate\Database\Eloquent\Model
     {
-        return $this->userService->updateUser($record->getKey(), $data);
+        $formRequest = new UpdateUserRequest();
+        $formRequest->merge($data);
+        $formRequest->setRouteResolver(function () use ($record) {
+            return $record;
+        });
+        $validated = $formRequest->validated();
+
+        return $this->userService->updateUser($record->getKey(), $validated);
     }
 }

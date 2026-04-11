@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Users\Pages;
 
 use App\Contracts\User\UserServiceInterface;
 use App\Filament\Resources\Users\UserResource;
+use App\Http\Requests\CreateUserRequest;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateUser extends CreateRecord
@@ -19,6 +20,10 @@ class CreateUser extends CreateRecord
 
     protected function handleRecordCreation(array $data): \App\Models\User
     {
-        return $this->userService->createUser($data);
+        $formRequest = new CreateUserRequest();
+        $formRequest->merge($data);
+        $validated = $formRequest->validated();
+
+        return $this->userService->createUser($validated);
     }
 }

@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Enterprises\Pages;
 
 use App\Contracts\Enterprise\EnterpriseServiceInterface;
 use App\Filament\Resources\Enterprises\EnterpriseResource;
+use App\Http\Requests\CreateEnterpriseRequest;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateEnterprise extends CreateRecord
@@ -19,6 +20,10 @@ class CreateEnterprise extends CreateRecord
 
     protected function handleRecordCreation(array $data): \App\Models\Enterprise
     {
-        return $this->enterpriseService->createEnterprise($data);
+        $formRequest = new CreateEnterpriseRequest();
+        $formRequest->merge($data);
+        $validated = $formRequest->validated();
+
+        return $this->enterpriseService->createEnterprise($validated);
     }
 }
