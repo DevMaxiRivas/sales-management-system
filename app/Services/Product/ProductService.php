@@ -8,6 +8,8 @@ use App\Models\Product;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class ProductService implements ProductServiceInterface
 {
@@ -51,9 +53,7 @@ class ProductService implements ProductServiceInterface
             throw new \RuntimeException("Producto con id {$id} no encontrado.");
         }
 
-        $product->update($data);
-
-        return $product->refresh();
+        return $this->repository->update($product, $data);
     }
 
     public function deleteProduct(int $id): bool

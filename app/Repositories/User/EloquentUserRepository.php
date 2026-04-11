@@ -3,6 +3,7 @@
 namespace App\Repositories\User;
 
 use App\Contracts\User\UserRepositoryInterface;
+use App\Models\Product;
 use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
@@ -40,11 +41,12 @@ class EloquentUserRepository implements UserRepositoryInterface
         return $this->query()->create($data);
     }
 
-    public function update(int $id, array $data): bool
+    public function update(User $user, array $data): ?User
     {
-        $user = $this->findById($id);
+        if ($user->update($data))
+            $user->refresh();
 
-        return $user ? $user->update($data) : false;
+        throw new \RuntimeException("No se pudo actualizar el registro con id {$user->id}.");
     }
 
     public function delete(int $id): bool

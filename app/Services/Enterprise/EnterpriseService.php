@@ -8,6 +8,8 @@ use App\Models\Enterprise;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class EnterpriseService implements EnterpriseServiceInterface
 {
@@ -51,9 +53,7 @@ class EnterpriseService implements EnterpriseServiceInterface
             throw new \RuntimeException("Empresa con id {$id} no encontrada.");
         }
 
-        $enterprise->update($data);
-
-        return $enterprise->refresh();
+        return $this->repository->update($enterprise, $data);
     }
 
     public function deleteEnterprise(int $id): bool

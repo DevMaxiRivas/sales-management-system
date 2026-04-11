@@ -40,11 +40,12 @@ class EloquentEnterpriseRepository implements EnterpriseRepositoryInterface
         return $this->query()->create($data);
     }
 
-    public function update(int $id, array $data): bool
+    public function update(Enterprise $enterprise, array $data): ?Enterprise
     {
-        $enterprise = $this->findById($id);
+        if ($enterprise->update($data))
+            return $enterprise->fresh();
 
-        return $enterprise ? $enterprise->update($data) : false;
+        throw new \RuntimeException("No se pudo actualizar el registro con id {$enterprise->id}.");
     }
 
     public function delete(int $id): bool

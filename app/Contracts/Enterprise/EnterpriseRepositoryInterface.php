@@ -21,7 +21,7 @@ interface EnterpriseRepositoryInterface
 
     public function create(array $data): Enterprise;
 
-    public function update(int $id, array $data): bool;
+    public function update(Enterprise $enterprise, array $data): ?Enterprise;
 
     public function delete(int $id): bool;
 }

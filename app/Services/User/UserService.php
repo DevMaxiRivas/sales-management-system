@@ -8,6 +8,9 @@ use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class UserService implements UserServiceInterface
 {
@@ -40,6 +43,11 @@ class UserService implements UserServiceInterface
 
     public function createUser(array $data): User
     {
+        // Hash password if present
+        if (isset($data['password'])) {
+            $data['password'] = Hash::make($data['password']);
+        }
+
         return $this->repository->create($data);
     }
 
@@ -47,17 +55,18 @@ class UserService implements UserServiceInterface
     {
         $user = $this->getUserById($id);
 
-        if (! $user) {
+        if (!$user) {
             throw new \RuntimeException("Usuario con id {$id} no encontrado.");
         }
 
-        if (array_key_exists('password', $data) && blank($data['password'])) {
+        // Hash password if present and not blank
+        if (isset($data['password']) && !blank($data['password'])) {
+            $data['password'] = Hash::make($data['password']);
+        } else {
             unset($data['password']);
         }
 
-        $user->update($data);
-
-        return $user->refresh();
+        return $this->repository->update($user, $data);
     }
 
     public function deleteUser(int $id): bool

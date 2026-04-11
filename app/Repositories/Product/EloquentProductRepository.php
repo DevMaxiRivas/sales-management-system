@@ -40,11 +40,12 @@ class EloquentProductRepository implements ProductRepositoryInterface
         return Product::query()->create($data);
     }
 
-    public function update(int $id, array $data): bool
+    public function update(Product $product, array $data): ?Product
     {
-        $product = $this->findById($id);
+        if ($product->update($data))
+            return $product->refresh();
 
-        return $product ? $product->update($data) : false;
+        throw new \RuntimeException("No se pudo actualizar el registro con id {$product->id}.");
     }
 
     public function delete(int $id): bool
