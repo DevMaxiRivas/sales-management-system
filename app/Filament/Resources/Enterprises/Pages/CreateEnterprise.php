@@ -20,10 +20,6 @@ class CreateEnterprise extends CreateRecord
 
     protected function handleRecordCreation(array $data): \App\Models\Enterprise
     {
-        $formRequest = new CreateEnterpriseRequest();
-        $formRequest->merge($data);
-        $validated = $formRequest->validated();
-
-        return $this->enterpriseService->createEnterprise($validated);
+        return $this->enterpriseService->createEnterprise($data);
     }
 }

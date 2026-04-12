@@ -20,10 +20,6 @@ class CreateUser extends CreateRecord
 
     protected function handleRecordCreation(array $data): \App\Models\User
     {
-        $formRequest = new CreateUserRequest();
-        $formRequest->merge($data);
-        $validated = $formRequest->validated();
-
-        return $this->userService->createUser($validated);
+        return $this->userService->createUser($data);
     }
 }

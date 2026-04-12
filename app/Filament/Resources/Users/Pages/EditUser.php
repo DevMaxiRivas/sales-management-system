@@ -30,13 +30,6 @@ class EditUser extends EditRecord
 
     protected function handleRecordUpdate(\Illuminate\Database\Eloquent\Model $record, array $data): \Illuminate\Database\Eloquent\Model
     {
-        $formRequest = new UpdateUserRequest();
-        $formRequest->merge($data);
-        $formRequest->setRouteResolver(function () use ($record) {
-            return $record;
-        });
-        $validated = $formRequest->validated();
-
-        return $this->userService->updateUser($record->getKey(), $validated);
+        return $this->userService->updateUser($record->getKey(), $data);
     }
 }

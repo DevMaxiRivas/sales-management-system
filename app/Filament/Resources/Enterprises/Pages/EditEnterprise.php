@@ -32,13 +32,6 @@ class EditEnterprise extends EditRecord
 
     protected function handleRecordUpdate(\Illuminate\Database\Eloquent\Model $record, array $data): \Illuminate\Database\Eloquent\Model
     {
-        $formRequest = new UpdateEnterpriseRequest();
-        $formRequest->merge($data);
-        $formRequest->setRouteResolver(function () use ($record) {
-            return $record;
-        });
-        $validated = $formRequest->validated();
-
-        return $this->enterpriseService->updateEnterprise($record->getKey(), $validated);
+        return $this->enterpriseService->updateEnterprise($record->getKey(), $data);
     }
 }
