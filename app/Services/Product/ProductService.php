@@ -4,12 +4,11 @@ namespace App\Services\Product;
 
 use App\Contracts\Product\ProductRepositoryInterface;
 use App\Contracts\Product\ProductServiceInterface;
+use App\DTOs\Product\ProductFilterDTO;
 use App\Models\Product;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 
 class ProductService implements ProductServiceInterface
 {
@@ -59,5 +58,14 @@ class ProductService implements ProductServiceInterface
     public function deleteProduct(int $id): bool
     {
         return $this->repository->delete($id);
+    }
+
+    public function filterProducts(array $filters, int $perPage = 15, bool $paginate = false): LengthAwarePaginator|Collection
+    {
+        return $this->repository->filter(
+            dto: ProductFilterDTO::fromArray($filters),
+            perPage: $perPage,
+            paginate: $paginate
+        );
     }
 }

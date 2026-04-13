@@ -3,10 +3,12 @@
 namespace App\Repositories\Product;
 
 use App\Contracts\Product\ProductRepositoryInterface;
+use App\DTOs\Product\ProductFilterDTO;
+use App\Filters\ProductQueryFilter;
 use App\Models\Product;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class EloquentProductRepository implements ProductRepositoryInterface
 {
@@ -53,5 +55,14 @@ class EloquentProductRepository implements ProductRepositoryInterface
         $product = $this->findById($id);
 
         return $product ? $product->delete() : false;
+    }
+
+    public function filter(ProductFilterDTO $dto, int $perPage = 15, bool $paginate = false): LengthAwarePaginator|Collection
+    {
+        $query = Product::query();
+
+        ProductQueryFilter::apply($query, $dto);
+
+        return $paginate ? $query->paginate($perPage) : $query->get();
     }
 }

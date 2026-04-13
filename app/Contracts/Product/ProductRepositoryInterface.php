@@ -2,10 +2,11 @@
 
 namespace App\Contracts\Product;
 
+use App\DTOs\Product\ProductFilterDTO;
 use App\Models\Product;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 interface ProductRepositoryInterface
 {
@@ -14,6 +15,8 @@ interface ProductRepositoryInterface
     public function all(array $columns = ['*']): Collection;
 
     public function paginate(int $perPage = 15, array $columns = ['*']): LengthAwarePaginator;
+
+    public function filter(ProductFilterDTO $dto, int $perPage = 15, bool $paginate = false): LengthAwarePaginator|Collection;
 
     public function findById(int $id): ?Product;
 
