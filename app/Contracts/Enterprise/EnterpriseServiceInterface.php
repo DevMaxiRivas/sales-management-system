@@ -24,4 +24,6 @@ interface EnterpriseServiceInterface
     public function updateEnterprise(int $id, array $data): Enterprise;
 
     public function deleteEnterprise(int $id): bool;
+
+    public function attachProducts(int $id, array $data): void;
 }

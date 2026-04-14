@@ -24,4 +24,6 @@ interface EnterpriseRepositoryInterface
     public function update(Enterprise $enterprise, array $data): ?Enterprise;
 
     public function delete(int $id): bool;
+
+    public function attachProducts(Enterprise $enterprise, array $data): void;
 }

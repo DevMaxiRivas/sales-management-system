@@ -54,4 +54,9 @@ class EloquentEnterpriseRepository implements EnterpriseRepositoryInterface
 
         return $enterprise ? $enterprise->delete() : false;
     }
+
+    public function attachProducts(Enterprise $enterprise, array $data): void
+    {
+        $enterprise->products()->attach($data);
+    }
 }

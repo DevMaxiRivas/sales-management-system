@@ -60,4 +60,23 @@ class EnterpriseService implements EnterpriseServiceInterface
     {
         return $this->repository->delete($id);
     }
+
+    public function attachProducts(int $id, array $data): void
+    {
+        if (!isset($data["products"])) return;
+
+        $enterprise = $this->getEnterpriseById($id);
+
+        if (!$enterprise) {
+            throw new \RuntimeException("Empresa con id {$id} no encontrada.");
+        }
+
+        $processedData = [];
+
+        foreach ($data["products"] as $product) {
+            $processedData[$product['product_id']] = ['product_enterprise_id' => $product['product_enterprise_id']];
+        }
+
+        $this->repository->attachProducts($enterprise, $processedData);
+    }
 }
