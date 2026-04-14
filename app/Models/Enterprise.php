@@ -26,4 +26,9 @@ class Enterprise extends Model
     {
         return $this->hasMany(ProductEnterprise::class);
     }
+
+    public function invoice_patterns(): HasMany
+    {
+        return $this->hasMany(InvoicePattern::class);
+    }
 }

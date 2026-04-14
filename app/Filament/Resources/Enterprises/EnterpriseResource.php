@@ -6,6 +6,7 @@ use App\Filament\Resources\Enterprises\Pages\CreateEnterprise;
 use App\Filament\Resources\Enterprises\Pages\EditEnterprise;
 use App\Filament\Resources\Enterprises\Pages\ListEnterprises;
 use App\Filament\Resources\Enterprises\Pages\Products\AttachProductsFromInvoice;
+use App\Filament\Resources\Enterprises\RelationManagers\InvoicePatternsRelationManager;
 use App\Filament\Resources\Enterprises\RelationManagers\ProductsRelationManager;
 use App\Filament\Resources\Enterprises\Schemas\EnterpriseForm;
 use App\Filament\Resources\Enterprises\Tables\EnterprisesTable;
@@ -40,6 +41,7 @@ class EnterpriseResource extends Resource
     {
         return [
             ProductsRelationManager::class,
+            InvoicePatternsRelationManager::class,
         ];
     }
 
