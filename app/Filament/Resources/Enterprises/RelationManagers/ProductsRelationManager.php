@@ -14,6 +14,8 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\DetachAction;
+use Filament\Actions\DetachBulkAction;
 use Filament\Actions\DissociateAction;
 use Filament\Actions\DissociateBulkAction;
 use Filament\Actions\EditAction;
@@ -87,12 +89,12 @@ class ProductsRelationManager extends RelationManager
             ])
             ->recordActions([
                 EditAction::make(),
-                DissociateAction::make(),
+                DetachAction::make(),
                 DeleteAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DissociateBulkAction::make(),
+                    DetachBulkAction::make(),
                     DeleteBulkAction::make(),
                 ]),
             ]);
