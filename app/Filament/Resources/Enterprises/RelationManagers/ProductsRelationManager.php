@@ -57,6 +57,7 @@ class ProductsRelationManager extends RelationManager
                 TextColumn::make('bar_code')
                     ->searchable(),
                 TextColumn::make('pivot.product_enterprise_id')
+                    ->label('Enterprise ID')
                     ->searchable(),
             ])
             ->filters([
@@ -88,14 +89,14 @@ class ProductsRelationManager extends RelationManager
                     ]),
             ])
             ->recordActions([
-                EditAction::make(),
+                // EditAction::make(),
                 DetachAction::make(),
-                DeleteAction::make(),
+                // DeleteAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DetachBulkAction::make(),
-                    DeleteBulkAction::make(),
+                    // DeleteBulkAction::make(),
                 ]),
             ]);
     }

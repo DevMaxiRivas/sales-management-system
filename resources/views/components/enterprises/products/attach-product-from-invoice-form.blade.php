@@ -13,6 +13,7 @@ use App\Models\Enterprise;
 use App\Services\Invoice\InvoiceOcrService;
 use App\Services\Product\ProductService;
 use App\Services\Enterprise\EnterpriseService;
+use App\Services\InvoicePattern\InvoicePatternService;
 
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
@@ -38,17 +39,19 @@ new class extends Component implements HasSchemas, HasActions {
     private InvoiceOcrService $invoiceOcrService;
     private ProductService $productService;
     private EnterpriseService $enterpriseService;
+    private InvoicePatternService $invoicePatternService;
 
     public function canView(): bool
     {
         return true;
     }
 
-    public function boot(InvoiceOcrService $invoiceOcrService, ProductService $productService, EnterpriseService $enterpriseService)
+    public function boot(InvoiceOcrService $invoiceOcrService, ProductService $productService, EnterpriseService $enterpriseService, InvoicePatternService $invoicePatternService)
     {
         $this->invoiceOcrService = $invoiceOcrService;
         $this->productService = $productService;
         $this->enterpriseService = $enterpriseService;
+        $this->invoicePatternService = $invoicePatternService;
     }
 
     public function mount(): void
@@ -56,9 +59,9 @@ new class extends Component implements HasSchemas, HasActions {
         $this->form->fill();
     }
 
-    public function extractProductIdsFromInvoiceImage($path): array
+    public function extractProductIdsFromInvoiceImage(string $path, ?string $pattern = null): array
     {
-        return $this->invoiceOcrService->extractProductIdsFromInvoiceImage($path);
+        return $this->invoiceOcrService->extractProductIdsFromInvoiceImage(path: $path, pattern: $pattern, ids_are_numeric: !is_null($pattern));
     }
 
     public function save(): void
@@ -70,17 +73,16 @@ new class extends Component implements HasSchemas, HasActions {
 
     public function form(Schema $form): Schema
     {
-        $products = [];
-
-        $this->productService
-            ->filterProducts(
+        $patterns = [];
+        $this->invoicePatternService
+            ->filterInvoicePatterns(
                 filters: [
                     'enterprise_id' => $this->enterprise->id,
-                    'enterprise_id_mode' => 'ne',
+                    'enterprise_id_mode' => 'eq',
                 ],
             )
-            ->each(function ($product) use (&$products) {
-                $products[$product->id] = $product->name;
+            ->each(function ($pattern) use (&$patterns) {
+                $patterns[$pattern->pattern] = $pattern->type->getLabel();
             });
 
         return $form->statePath('data')->schema([
@@ -88,12 +90,21 @@ new class extends Component implements HasSchemas, HasActions {
                 Wizard\Step::make('Add Photos')
                     ->schema([
                         // ...
-                        Components\FileUpload::make('photos_ids')->disk('local')->multiple()->maxFiles(5)->image()->imageEditor()->storeFiles(false),
+                        Components\Select::make('invoice_pattern_id')->options($patterns)->label('Invoice Pattern'),
+                        Components\FileUpload::make('photos_ids')
+                            ->label('Invoice Photos')
+                            ->disk('local')
+                            ->multiple()
+                            ->maxFiles(5)
+                            ->image()
+                            ->imageEditor() //
+                            ->helperText('Select only the part you wish to scan. If you need to edit the image, use the editor. Upload a images (Max 5MB). Accepted formats: .jpg, .jpeg, .png, .webp'),
                     ])
                     ->afterValidation(function () {
                         $products = [];
+                        $pattern = $this->data['invoice_pattern_id'];
                         foreach ($this->data['photos_ids'] as $key => $value) {
-                            $products = array_merge($this->extractProductIdsFromInvoiceImage($value->path()), $products);
+                            $products = array_merge($this->extractProductIdsFromInvoiceImage($value->path(), $pattern), $products);
                         }
 
                         $this->form->fill([
@@ -106,11 +117,35 @@ new class extends Component implements HasSchemas, HasActions {
                         //
                         ->schema([
                             //
-                            TextInput::make('product_enterprise_id')
+                            TextInput::make('product_enterprise_id')->required()->numeric()->rules(AttachProductsRequest::getRulesFromField(field: 'products.*.product_enterprise_id', params: ['enterprise_id' => $this->enterprise->id])),
+                            Select::make('product_id')
+                                ->label('Product')
                                 ->required()
-                                ->numeric() //
-                                ->rules(AttachProductsRequest::getRulesFromField(field: 'products.*.product_enterprise_id', params: ['enterprise_id' => $this->enterprise->id])),
-                            Select::make('product_id')->options($products)->distinct()->required(),
+                                ->distinct()
+                                ->searchable()
+                                ->getSearchResultsUsing(
+                                    fn(string $search): array => $this->productService
+                                        ->filterProducts(
+                                            filters: [
+                                                'enterprise_id' => $this->enterprise->id,
+                                                'enterprise_id_mode' => 'ne',
+                                                'product_name' => $search,
+                                                'product_name_mode' => 'like',
+                                            ],
+                                        )
+                                        ->pluck('name', 'id')
+                                        ->toArray(),
+                                )
+                                ->getOptionLabelUsing(
+                                    fn($value): ?string => $this->productService
+                                        ->filterProducts(
+                                            filters: [
+                                                'product_id' => $value,
+                                                'product_id_mode' => 'eq',
+                                            ],
+                                        )
+                                        ->first()->name,
+                                ),
                         ])
                         ->columns(2)
                         ->minItems(1),
