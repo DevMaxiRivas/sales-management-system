@@ -2,39 +2,23 @@
 
 namespace App\Filters;
 
-use App\DTOs\Product\ProductFilterDTO;
+use App\DTOs\InvoicePattern\InvoicePatternFilterDTO;
 use Illuminate\Database\Eloquent\Builder;
 
-class ProductQueryFilter
+class InvoicePatternQueryFilter
 {
     public function __construct(
         private Builder $query,
-        private ProductFilterDTO $dto,
+        private InvoicePatternFilterDTO $dto,
     ) {}
 
-    public static function apply(Builder $query, ProductFilterDTO $dto): Builder
+    public static function apply(Builder $query, InvoicePatternFilterDTO $dto): Builder
     {
         return (new self($query, $dto))
-            ->applyProductIds()
             ->applyEnterprise()
             ->applyCreatedFrom()
             ->applyCreatedUntil()
-            ->applyProductName()
             ->getQuery();
-    }
-
-    private function applyProductIds(): static
-    {
-        if (!empty($this->dto->productIds)) {
-            FilterApplier::list(
-                $this->query,
-                'id',
-                $this->dto->productIds,
-                $this->dto->productIdsMode,
-            );
-        }
-
-        return $this;
     }
 
     private function applyEnterprise(): static
@@ -42,7 +26,7 @@ class ProductQueryFilter
         if ($this->dto->enterpriseId !== null) {
             FilterApplier::relationship(
                 $this->query,
-                'enterprises',
+                'enterprise',
                 'enterprises.id',
                 $this->dto->enterpriseId,
                 $this->dto->enterpriseIdMode,
@@ -74,20 +58,6 @@ class ProductQueryFilter
                 'created_at',
                 $this->dto->createdUntil,
                 $this->dto->createdUntilMode,
-            );
-        }
-
-        return $this;
-    }
-
-    private function applyProductName(): static
-    {
-        if ($this->dto->productName !== null) {
-            FilterApplier::string(
-                $this->query,
-                'name',
-                $this->dto->productName,
-                $this->dto->productNameMode,
             );
         }
 
