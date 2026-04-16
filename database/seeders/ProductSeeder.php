@@ -63,6 +63,106 @@ class ProductSeeder extends Seeder
                 "created_at" => "2026-04-08 20:35:05",
                 "updated_at" => "2026-04-08 20:35:05",
                 "deleted_at" => null
+            ),
+            array(
+                "id" => 6,
+                "bar_code" => "3422334234",
+                "name" => "JABON GRANBY BE ROSAS C\/BICARBONATO 3KG",
+                "stock" => 0,
+                "min_stock" => null,
+                "created_at" => "2026-04-15 21:42:58",
+                "updated_at" => "2026-04-15 21:42:58",
+                "deleted_at" => null
+            ),
+            array(
+                "id" => 7,
+                "bar_code" => "32423234234",
+                "name" => "JABON GRANBY BE LIMON C\/BICARBONATO 3KG",
+                "stock" => 0,
+                "min_stock" => null,
+                "created_at" => "2026-04-15 21:43:44",
+                "updated_at" => "2026-04-15 21:43:44",
+                "deleted_at" => null
+            ),
+            array(
+                "id" => 8,
+                "bar_code" => "234234234",
+                "name" => "ROLLO DE COCINA CAMPANITA PRACTI 200PAñO",
+                "stock" => 0,
+                "min_stock" => null,
+                "created_at" => "2026-04-15 21:44:28",
+                "updated_at" => "2026-04-15 21:44:28",
+                "deleted_at" => null
+            ),
+            array(
+                "id" => 9,
+                "bar_code" => "3892839238932",
+                "name" => "DETERGENTE MAGISTRAL LIMON 500ML",
+                "stock" => 0,
+                "min_stock" => null,
+                "created_at" => "2026-04-15 21:44:56",
+                "updated_at" => "2026-04-15 21:44:56",
+                "deleted_at" => null
+            ),
+            array(
+                "id" => 10,
+                "bar_code" => "3892839238911",
+                "name" => "JABON GRANBY L.A MANO LIMON C\/BICARBONATO 3KG",
+                "stock" => 0,
+                "min_stock" => null,
+                "created_at" => "2026-04-15 21:54:55",
+                "updated_at" => "2026-04-15 21:54:55",
+                "deleted_at" => null
+            ),
+            array(
+                "id" => 11,
+                "bar_code" => "9283923898",
+                "name" => "JABON REXONA BAMBOO 3UX120G",
+                "stock" => 0,
+                "min_stock" => null,
+                "created_at" => "2026-04-15 21:58:19",
+                "updated_at" => "2026-04-15 21:59:17",
+                "deleted_at" => null
+            ),
+            array(
+                "id" => 12,
+                "bar_code" => "2131231231",
+                "name" => "JABON REXONA COTTON FRESH 3UX120G",
+                "stock" => 0,
+                "min_stock" => null,
+                "created_at" => "2026-04-15 21:59:03",
+                "updated_at" => "2026-04-15 21:59:03",
+                "deleted_at" => null
+            ),
+            array(
+                "id" => 13,
+                "bar_code" => "932832983",
+                "name" => "JABON REXONA FUTBOL FANATIC 3UX120G",
+                "stock" => 0,
+                "min_stock" => null,
+                "created_at" => "2026-04-15 21:59:40",
+                "updated_at" => "2026-04-15 21:59:40",
+                "deleted_at" => null
+            ),
+            array(
+                "id" => 14,
+                "bar_code" => "98329238",
+                "name" => "JABON REXONA NUTRI ORCHID 3UX120G",
+                "stock" => 0,
+                "min_stock" => null,
+                "created_at" => "2026-04-15 22:00:13",
+                "updated_at" => "2026-04-15 22:00:13",
+                "deleted_at" => null
+            ),
+            array(
+                "id" => 15,
+                "bar_code" => "3242342342",
+                "name" => "JABON REXONA SENSIBLE 3UX120G",
+                "stock" => 0,
+                "min_stock" => null,
+                "created_at" => "2026-04-15 22:00:45",
+                "updated_at" => "2026-04-15 22:00:45",
+                "deleted_at" => null
             )
         );
 
