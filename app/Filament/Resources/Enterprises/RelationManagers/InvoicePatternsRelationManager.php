@@ -17,6 +17,7 @@ use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -34,7 +35,14 @@ class InvoicePatternsRelationManager extends RelationManager
             ->components([
                 Select::make('type')
                     ->options(PatternInvoiceTypeEnum::class)
-                    ->rules(AttachPatternInvoiceRequest::getRulesFromField('type', ['enterprise_id' => $this->ownerRecord->id])),
+                    ->rules(
+                        function (Get $get) {
+                            return AttachPatternInvoiceRequest::getRulesFromField(
+                                field: 'type',
+                                params: ['enterprise_id' => $this->ownerRecord->id, 'record_id' => $get('id')]
+                            );
+                        }
+                    ),
                 TextInput::make('pattern')
                     ->rules(AttachPatternInvoiceRequest::getRulesFromField('pattern', ['enterprise_id' => $this->ownerRecord->id])),
             ]);

@@ -24,9 +24,7 @@ class AttachPatternInvoiceRequest extends BaseModelFormRequest
      */
     public function rules(): array
     {
-        return [
-            //
-        ];
+        return self::getRules($this->route()->parameters());
     }
 
     public static function getRules(?array $params = null): array
@@ -35,9 +33,11 @@ class AttachPatternInvoiceRequest extends BaseModelFormRequest
             'type' => [
                 'required',
                 'integer',
-                Rule::unique('invoice_patterns', 'type')->where('enterprise_id', $params['enterprise_id'])
+                isset($params['record_id']) ?
+                    Rule::unique('invoice_patterns', 'type')->where('enterprise_id', $params['enterprise_id'])->withoutTrashed()->ignore($params['record_id'])
+                    : Rule::unique('invoice_patterns', 'type')->where('enterprise_id', $params['enterprise_id'])->withoutTrashed()
             ],
-            'pattern' => ['required' ,'string'],
+            'pattern' => ['required', 'string'],
         ];
     }
 }
