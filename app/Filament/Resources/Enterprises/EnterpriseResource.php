@@ -5,7 +5,7 @@ namespace App\Filament\Resources\Enterprises;
 use App\Filament\Resources\Enterprises\Pages\CreateEnterprise;
 use App\Filament\Resources\Enterprises\Pages\EditEnterprise;
 use App\Filament\Resources\Enterprises\Pages\ListEnterprises;
-use App\Filament\Resources\Enterprises\Pages\Products\AttachProductsFromInvoice;
+use App\Filament\Resources\Enterprises\Pages\Products\AttachProductsFromInvoicePage;
 use App\Filament\Resources\Enterprises\RelationManagers\InvoicePatternsRelationManager;
 use App\Filament\Resources\Enterprises\RelationManagers\ProductsRelationManager;
 use App\Filament\Resources\Enterprises\Schemas\EnterpriseForm;
@@ -51,7 +51,7 @@ class EnterpriseResource extends Resource
             'index' => ListEnterprises::route('/'),
             'create' => CreateEnterprise::route('/create'),
             'edit' => EditEnterprise::route('/{record}/edit'),
-            'attach/products' => AttachProductsFromInvoice::route('/{record}/attach/products'),
+            'attach/products' => AttachProductsFromInvoicePage::route('/{record}/attach/products'),
         ];
     }
 
