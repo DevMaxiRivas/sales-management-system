@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Auth;
 
 class EloquentUserRepository implements UserRepositoryInterface
 {
@@ -54,5 +55,10 @@ class EloquentUserRepository implements UserRepositoryInterface
         $user = $this->findById($id);
 
         return $user ? $user->delete() : false;
+    }
+
+    public function getCurrentUser(): User
+    {
+        return Auth::user();
     }
 }

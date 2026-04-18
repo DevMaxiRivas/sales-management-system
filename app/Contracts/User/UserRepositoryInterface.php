@@ -24,4 +24,6 @@ interface UserRepositoryInterface
     public function update(User $user, array $data): ?User;
 
     public function delete(int $id): bool;
+
+    public function getCurrentUser(): User;
 }

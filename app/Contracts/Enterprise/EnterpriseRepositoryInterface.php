@@ -2,28 +2,18 @@
 
 namespace App\Contracts\Enterprise;
 
+use App\Contracts\Repository\RepositoryInterface;
+use App\DTOs\Enterprise\EnterpriseFilterDTO;
 use App\Models\Enterprise;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
-interface EnterpriseRepositoryInterface
+interface EnterpriseRepositoryInterface extends RepositoryInterface
 {
-    public function query(): Builder;
-
-    public function all(array $columns = ['*']): Collection;
-
-    public function paginate(int $perPage = 15, array $columns = ['*']): LengthAwarePaginator;
-
-    public function findById(int $id): ?Enterprise;
-
     public function findByTaxId(string $taxId): ?Enterprise;
 
-    public function create(array $data): Enterprise;
-
-    public function update(Enterprise $enterprise, array $data): ?Enterprise;
-
-    public function delete(int $id): bool;
-
     public function attachProducts(Enterprise $enterprise, array $data): void;
+
+    public function filter(EnterpriseFilterDTO $dto, int $perPage = 15, bool $paginate = false): LengthAwarePaginator|Collection;
 }

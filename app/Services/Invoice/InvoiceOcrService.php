@@ -39,23 +39,28 @@ class InvoiceOcrService
         $data = array_map(fn(string $element) => str_replace(' ', '', $element), $data);
 
         if ($ids_are_numeric) {
+            try {
+                return
+                    array_values(
+                        array_filter(
+                            array: array_map(
+                                callback: function (string $element) use ($pattern) {
+                                    // preg_grep throws an exception if a pattern with incorrect syntax is provided
+                                    if (!is_null($pattern) && count(preg_grep($pattern, [$element])) == 0) {
+                                        return null;
+                                    }
 
-            return
-                array_values(
-                    array_filter(
-                        array: array_map(
-                            callback: function (string $element) use ($pattern) {
-                                if (!is_null($pattern) && count(preg_grep($pattern, [$element])) == 0) {
-                                    return null;
-                                }
-
-                                return preg_replace('/[^0-9]/', '', $element);
-                            },
-                            array: $data
-                        ),
-                        callback: fn($element) => !is_null($element)
-                    )
-                );
+                                    return preg_replace('/[^0-9]/', '', $element);
+                                },
+                                array: $data
+                            ),
+                            callback: fn($element) => !is_null($element)
+                        )
+                    );
+            } catch (\Throwable $th) {
+                Log::info($th->getMessage());
+                return [];
+            }
         }
         return $data;
     }

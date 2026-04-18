@@ -26,6 +26,11 @@ class UserService implements UserServiceInterface
         return $this->repository->all($columns);
     }
 
+    public function getCurrentUser(): User
+    {
+        return $this->repository->getCurrentUser();
+    }
+
     public function paginateUsers(int $perPage = 15, array $columns = ['*']): LengthAwarePaginator
     {
         return $this->repository->paginate($perPage, $columns);

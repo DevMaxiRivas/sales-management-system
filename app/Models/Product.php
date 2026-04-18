@@ -11,6 +11,7 @@ class Product extends Model
         'bar_code',
         'name',
         'stock',
+        'qty_per_bundle',
         'min_stock',
         'created_at',
         'updated_at',

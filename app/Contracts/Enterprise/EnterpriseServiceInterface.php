@@ -26,4 +26,6 @@ interface EnterpriseServiceInterface
     public function deleteEnterprise(int $id): bool;
 
     public function attachProducts(int $id, array $data): void;
+
+    public function filterEnterprises(array $filters, int $perPage = 15, bool $paginate = false): LengthAwarePaginator|Collection;
 }

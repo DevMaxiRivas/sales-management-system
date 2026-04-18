@@ -23,6 +23,7 @@ class CreateProductRequest extends BaseModelFormRequest
             'name' => 'required|string|max:255',
             'stock' => 'required|integer|min:0',
             'min_stock' => 'integer|min:0',
+            'qty_per_bundle' => 'required|integer|min:1',
         ];
     }
 }

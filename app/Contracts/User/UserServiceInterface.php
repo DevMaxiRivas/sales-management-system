@@ -24,4 +24,6 @@ interface UserServiceInterface
     public function updateUser(int $id, array $data): User;
 
     public function deleteUser(int $id): bool;
+
+    public function getCurrentUser(): User;
 }

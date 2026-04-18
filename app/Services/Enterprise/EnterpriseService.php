@@ -4,6 +4,7 @@ namespace App\Services\Enterprise;
 
 use App\Contracts\Enterprise\EnterpriseRepositoryInterface;
 use App\Contracts\Enterprise\EnterpriseServiceInterface;
+use App\DTOs\Enterprise\EnterpriseFilterDTO;
 use App\Models\Enterprise;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
@@ -78,5 +79,10 @@ class EnterpriseService implements EnterpriseServiceInterface
         }
 
         $this->repository->attachProducts($enterprise, $processedData);
+    }
+
+    public function filterEnterprises(array $filters, int $perPage = 15, bool $paginate = false): LengthAwarePaginator|Collection
+    {
+        return $this->repository->filter(EnterpriseFilterDTO::fromArray($filters), $perPage, $paginate);
     }
 }

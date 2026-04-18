@@ -6,6 +6,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
 class InvoicesTable
@@ -14,7 +15,11 @@ class InvoicesTable
     {
         return $table
             ->columns([
-                //
+                TextColumn::make('id')->label('#'),
+                TextColumn::make('enterprise.name'),
+                TextColumn::make('invoice_number'),
+                TextColumn::make('paid_at')->date(),
+                TextColumn::make('created_at')->dateTime(),
             ])
             ->filters([
                 //

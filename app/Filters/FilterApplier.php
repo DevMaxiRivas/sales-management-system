@@ -69,6 +69,25 @@ class FilterApplier
             ),
         };
     }
+
+    public static function relationshipList(
+        Builder $query,
+        string $relation,
+        string $column,
+        array $values,
+        ListFilterMode $mode,
+    ): void {
+        match ($mode) {
+            ListFilterMode::In => $query->whereHas(
+                $relation,
+                fn(Builder $q) => $q->whereIn($column, $values)
+            ),
+            ListFilterMode::NotIn => $query->whereDoesntHave(
+                $relation,
+                fn(Builder $q) => $q->whereIn($column, $values)
+            ),
+        };
+    }
     public static function string(
         Builder $query,
         string $column,

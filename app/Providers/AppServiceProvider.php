@@ -7,17 +7,21 @@ use App\Contracts\Product\ProductRepositoryInterface;
 use App\Contracts\Product\ProductServiceInterface;
 use App\Contracts\Enterprise\EnterpriseRepositoryInterface;
 use App\Contracts\Enterprise\EnterpriseServiceInterface;
+use App\Contracts\Invoice\InvoiceRepositoryInterface;
+use App\Contracts\Invoice\InvoiceServiceInterface;
 use App\Contracts\InvoicePattern\InvoicePatternRepositoryInterface;
 use App\Contracts\InvoicePattern\InvoicePatternServiceInterface;
 use App\Contracts\User\UserRepositoryInterface;
 use App\Contracts\User\UserServiceInterface;
 use App\Repositories\Product\EloquentProductRepository;
 use App\Repositories\Enterprise\EloquentEnterpriseRepository;
+use App\Repositories\Invoice\EloquentInvoiceRepository;
 use App\Repositories\InvoicePattern\EloquentInvoicePatternRepository;
 use App\Repositories\User\EloquentUserRepository;
 use App\Services\Ocr\TesseractOcrReader;
 use App\Services\Product\ProductService;
 use App\Services\Enterprise\EnterpriseService;
+use App\Services\Invoice\InvoiceService;
 use App\Services\InvoicePattern\InvoicePatternService;
 use App\Services\User\UserService;
 use Illuminate\Support\ServiceProvider;
@@ -38,6 +42,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(UserServiceInterface::class, UserService::class);
         $this->app->bind(InvoicePatternRepositoryInterface::class, EloquentInvoicePatternRepository::class);
         $this->app->bind(InvoicePatternServiceInterface::class, InvoicePatternService::class);
+        $this->app->bind(InvoiceRepositoryInterface::class, EloquentInvoiceRepository::class);
+        $this->app->bind(InvoiceServiceInterface::class, InvoiceService::class);
     }
 
     /**

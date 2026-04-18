@@ -66,6 +66,18 @@ class ProductForm
                     )
                     ->label('Minimum Stock')
                     ->numeric(),
+                Components\TextInput::make('qty_per_bundle')
+                    ->rules(
+                        fn(Get $get) =>
+                        self::getRules(
+                            field: 'min_stock',
+                            params: ['recordId' => $get('id')],
+                            create: is_null($get('id'))
+                        )
+                    )
+                    ->label('Quantity Per Bundle')
+                    ->default(1)
+                    ->numeric()
             ]);
     }
 }

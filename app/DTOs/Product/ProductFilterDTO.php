@@ -22,6 +22,8 @@ class ProductFilterDTO
         public readonly ?ComparisonFilterMode $createdUntilMode = null,
         public readonly ?string $productName = null,
         public readonly ?StringFilterMode $productNameMode = null,
+        public readonly ?array $productEnterpriseIds = null,
+        public readonly ?ListFilterMode $productEnterpriseIdsMode = null
     ) {}
 
     public static function fromArray(array $filters): self
@@ -52,6 +54,10 @@ class ProductFilterDTO
             productName: $filters['product_name'] ?? null,
             productNameMode: isset($filters['product_name']) && isset($filters['product_name_mode']) ?
                 (StringFilterMode::tryFrom($filters['product_name_mode']) ?? StringFilterMode::Like)
+                : null,
+            productEnterpriseIds: $filters['product_enterprise_ids'] ?? null,
+            productEnterpriseIdsMode: isset($filters['product_enterprise_ids']) && isset($filters['product_enterprise_ids_mode']) ?
+                (ListFilterMode::tryFrom($filters['product_enterprise_ids_mode']) ?? ListFilterMode::In)
                 : null
         );
     }

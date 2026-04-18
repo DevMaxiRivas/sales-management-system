@@ -14,9 +14,19 @@ class ProductQueryFilter
 
     public static function apply(Builder $query, ProductFilterDTO $dto): Builder
     {
+        // $query = (new self($query, $dto))
+        //     ->applyProductIds()
+        //     ->applyEnterprise()
+        //     ->applyProductEnterpriseIds()
+        //     ->applyCreatedFrom()
+        //     ->applyCreatedUntil()
+        //     ->applyProductName()
+        //     ->getQuery();
+        // dd($query->toSql(), $query->getBindings());
         return (new self($query, $dto))
             ->applyProductIds()
             ->applyEnterprise()
+            ->applyProductEnterpriseIds()
             ->applyCreatedFrom()
             ->applyCreatedUntil()
             ->applyProductName()
@@ -46,6 +56,21 @@ class ProductQueryFilter
                 'enterprises.id',
                 $this->dto->enterpriseId,
                 $this->dto->enterpriseIdMode,
+            );
+        }
+
+        return $this;
+    }
+
+    private function applyProductEnterpriseIds(): static
+    {
+        if ($this->dto->productEnterpriseIds !== null) {
+            FilterApplier::relationshipList(
+                $this->query,
+                'enterprises',
+                'product_enterprise.product_enterprise_id',
+                $this->dto->productEnterpriseIds,
+                $this->dto->productEnterpriseIdsMode,
             );
         }
 
