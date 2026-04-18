@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('name');
             $table->bigInteger('stock')->default(0);
             $table->integer('min_stock')->nullable();
+            $table->integer('qty_per_bundle')->default(1);
 
             $table->timestamps();
             $table->softDeletes();

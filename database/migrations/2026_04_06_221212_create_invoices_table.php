@@ -21,7 +21,7 @@ return new class extends Migration
             $table->text('observations')->nullable();
             $table->timestamps();
             $table->softDeletes();
-            $table->timestamp('paid_at')->nullable();
+            $table->date('paid_at')->nullable();
         });
     }
 
