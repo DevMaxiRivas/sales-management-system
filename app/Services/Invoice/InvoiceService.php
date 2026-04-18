@@ -4,6 +4,8 @@ namespace App\Services\Invoice;
 
 use App\Contracts\Invoice\InvoiceRepositoryInterface;
 use App\Contracts\Invoice\InvoiceServiceInterface;
+use App\Contracts\Product\ProductServiceInterface;
+use App\Contracts\User\UserServiceInterface;
 use App\DTOs\Invoice\InvoiceFilterDTO;
 use App\Models\Invoice;
 use App\Services\Product\ProductService;
@@ -16,8 +18,8 @@ class InvoiceService implements InvoiceServiceInterface
 {
     public function __construct(
         private InvoiceRepositoryInterface $repository,
-        private ProductService $productService,
-        private UserService $userService
+        private ProductServiceInterface $productService,
+        private UserServiceInterface $userService
     ) {}
 
     public function query(): Builder
