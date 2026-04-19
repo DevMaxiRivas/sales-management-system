@@ -44,6 +44,10 @@ new class extends Component implements HasSchemas, HasActions {
     public ?Invoice $invoice = null;
     public array $data = [];
 
+    protected array $price_options = [];
+    protected ?string $product_pattern = null;
+    protected ?string $price_pattern = null;
+
     protected $listeners = [
         'qr-info-captured' => 'QRInfoCaptured',
     ];
@@ -86,11 +90,6 @@ new class extends Component implements HasSchemas, HasActions {
                 ->send();
         }
         $this->form->fill();
-    }
-
-    public function extractProductIdsFromInvoiceImage(string $path, ?string $pattern = null): array
-    {
-        return $this->invoiceOcrService->extractProductIdsFromInvoiceImage(path: $path, pattern: $pattern, ids_are_numeric: !is_null($pattern));
     }
 
     protected function getEnterprises(string $search): array
@@ -140,12 +139,16 @@ new class extends Component implements HasSchemas, HasActions {
         return $patterns;
     }
 
-    protected function processInvoiceImages(): void
+    protected function processListProduct(): void
     {
         $products = [];
         $pattern = $this->data['invoice_pattern'];
         foreach ($this->data['photos_product_list'] as $key => $value) {
-            $products = array_merge($this->extractProductIdsFromInvoiceImage($value->path(), $pattern), $products);
+            $products = array_merge(
+                //
+                $this->invoiceOcrService->extractProductIdsFromInvoiceImage(path: $value->path(), pattern: $pattern, ids_are_numeric: !is_null($pattern)),
+                $products,
+            );
         }
 
         if (empty($products)) {
@@ -161,7 +164,6 @@ new class extends Component implements HasSchemas, HasActions {
                     'product_enterprise_ids_mode' => 'in',
                 ],
             )
-            // ->pluck('id', 'qty_per_bundle')
             ->map(function ($product) {
                 return [
                     'id' => $product->id,
@@ -179,7 +181,6 @@ new class extends Component implements HasSchemas, HasActions {
                 fn($product) => [
                     'product_id' => $product['id'],
                     'qty_per_bundle' => $product['qty_per_bundle'],
-                    'unit_price' => 0.0,
                     'bundles_quantity' => 0,
                     'quantity' => 0,
                 ],
@@ -188,6 +189,24 @@ new class extends Component implements HasSchemas, HasActions {
         ];
 
         $this->form->fill($newDataForm);
+    }
+
+    protected function processListPrices(): void
+    {
+        $prices = [];
+        foreach ($this->data['photos_prices_list'] as $key => $value) {
+            $prices = array_merge(
+                //
+                $this->invoiceOcrService->extractPricesFromInvoiceImage(path: $value->path()),
+                $prices,
+            );
+        }
+
+        if (empty($prices)) {
+            return;
+        }
+
+        $this->price_options = $prices;
     }
 
     public function form(Schema $form): Schema
@@ -230,10 +249,23 @@ new class extends Component implements HasSchemas, HasActions {
                             ->image()
                             ->imageEditor() //
                             ->helperText('Select only the part you wish to scan. If you need to edit the image, use the editor. Upload a images (Max 5MB). Accepted formats: .jpg, .jpeg, .png, .webp'),
+                        Components\FileUpload::make('photos_prices_list')
+                            ->label('List Prices')
+                            ->columnSpanFull()
+                            ->disk('local')
+                            ->multiple()
+                            ->maxFiles(5)
+                            ->image()
+                            ->imageEditor() //
+                            ->helperText('Select only the part you wish to scan. If you need to edit the image, use the editor. Upload a images (Max 5MB). Accepted formats: .jpg, .jpeg, .png, .webp'),
                     ])
                     ->afterValidation(function () {
+                        if (!empty($this->data['photos_prices_list'])) {
+                            $this->processListPrices();
+                        }
+
                         if (!empty($this->data['photos_product_list'])) {
-                            $this->processInvoiceImages();
+                            $this->processListProduct();
                         }
                     }),
                 SComponents\Wizard\Step::make('Register Invoice')->schema([
@@ -255,7 +287,6 @@ new class extends Component implements HasSchemas, HasActions {
                                         $qty_per_bundle = $this->productService->getProductById($state)?->qty_per_bundle;
                                     }
 
-                                    $set('unit_price', 0.0);
                                     $set('qty_per_bundle', $qty_per_bundle);
                                     $set('bundles_quantity', 0);
                                     $set('quantity', 0);
@@ -264,11 +295,10 @@ new class extends Component implements HasSchemas, HasActions {
                                 ->required(),
                             Components\TextInput::make('unit_price')
                                 //
-                                ->datalist([1000, 100, 10])
+                                ->datalist(fn() => $this->price_options)
                                 ->prefix('$')
                                 ->inputMode('decimal')
                                 ->numeric()
-                                ->default(0)
                                 ->columnSpan(1)
                                 ->required(),
                             Components\TextInput::make('qty_per_bundle')->numeric()->default(1)->disabled(),
