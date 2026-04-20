@@ -18,6 +18,8 @@ class InvoicesTable
                 TextColumn::make('id')->label('#'),
                 TextColumn::make('enterprise.name'),
                 TextColumn::make('invoice_number'),
+                TextColumn::make('products_count')->label('Products')->counts('products'),
+                TextColumn::make('total_price')->money('USD'),
                 TextColumn::make('paid_at')->date(),
                 TextColumn::make('created_at')->dateTime(),
             ])
