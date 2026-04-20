@@ -24,7 +24,7 @@ use Filament\Actions\Concerns\InteractsWithActions;
 
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\Facades\Blade;
-
+use App\Enums\InvoicePatern\PatternInvoiceTypeEnum;
 use Filament\Notifications\Notification;
 
 use App\Http\Requests\Enterprise\AttachProductsRequest;
@@ -35,6 +35,7 @@ new class extends Component implements HasSchemas, HasActions {
 
     public ?array $data = [];
     public Enterprise $enterprise;
+    public ?string $product_pattern = null;
 
     private InvoiceOcrService $invoiceOcrService;
     private ProductService $productService;
@@ -56,12 +57,21 @@ new class extends Component implements HasSchemas, HasActions {
 
     public function mount(): void
     {
+        $this->product_pattern = $this->invoicePatternService
+            ->filterInvoicePatterns(
+                filters: [
+                    'enterprise_id' => $this->enterprise->id,
+                    'enterprise_id_mode' => 'eq',
+                ],
+            )
+            ->where('type', PatternInvoiceTypeEnum::ProductLine->value)
+            ->first()?->pattern;
         $this->form->fill();
     }
 
-    public function extractProductIdsFromInvoiceImage(string $path, ?string $pattern = null): array
+    public function extractProductIdsFromInvoiceImage(string $path): array
     {
-        return $this->invoiceOcrService->extractProductIdsFromInvoiceImage(path: $path, pattern: $pattern, ids_are_numeric: !is_null($pattern));
+        return $this->invoiceOcrService->extractProductIdsFromInvoiceImage(path: $path, pattern: $this->product_pattern, ids_are_numeric: true);
     }
 
     public function save(): void
@@ -73,24 +83,11 @@ new class extends Component implements HasSchemas, HasActions {
 
     public function form(Schema $form): Schema
     {
-        $patterns = [];
-        $this->invoicePatternService
-            ->filterInvoicePatterns(
-                filters: [
-                    'enterprise_id' => $this->enterprise->id,
-                    'enterprise_id_mode' => 'eq',
-                ],
-            )
-            ->each(function ($pattern) use (&$patterns) {
-                $patterns[$pattern->pattern] = $pattern->type->getLabel();
-            });
-
         return $form->statePath('data')->schema([
             Wizard::make([
                 Wizard\Step::make('Add Photos')
                     ->schema([
                         // ...
-                        Components\Select::make('invoice_pattern_id')->options($patterns)->label('Invoice Pattern'),
                         Components\FileUpload::make('photos_ids')
                             ->label('Invoice Photos')
                             ->disk('local')
@@ -102,9 +99,8 @@ new class extends Component implements HasSchemas, HasActions {
                     ])
                     ->afterValidation(function () {
                         $products = [];
-                        $pattern = $this->data['invoice_pattern_id'];
                         foreach ($this->data['photos_ids'] as $key => $value) {
-                            $products = array_merge($this->extractProductIdsFromInvoiceImage($value->path(), $pattern), $products);
+                            $products = array_merge($this->extractProductIdsFromInvoiceImage($value->path()), $products);
                         }
 
                         $this->form->fill([
