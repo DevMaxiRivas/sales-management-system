@@ -30,7 +30,15 @@ use Illuminate\Support\Facades\Blade;
 
 use Filament\Notifications\Notification;
 
+use App\Enums\InvoicePatern\PatternInvoiceTypeEnum;
+
+use Illuminate\Database\Eloquent\Collection;
+
 use App\Http\Requests\Enterprise\AttachProductsRequest;
+
+use App\Http\Requests\Invoice\CreateInvoiceRequest;
+use App\Http\Requests\Invoice\UpdateInvoiceRequest;
+
 new class extends Component implements HasSchemas, HasActions {
     use InteractsWithSchemas;
     use InteractsWithActions;
@@ -85,7 +93,7 @@ new class extends Component implements HasSchemas, HasActions {
         $record = $this->invoiceService->createInvoice($this->form->getState());
         if ($record instanceof Invoice) {
             Notification::make()
-                ->title('Invoice # ' . $record->invoice_number . ' saved successfully')
+                ->title('Invoice #' . $record->id . ' saved successfully')
                 ->success()
                 ->send();
         }
@@ -139,16 +147,31 @@ new class extends Component implements HasSchemas, HasActions {
         return $patterns;
     }
 
+    protected function getPatterns(int $enterprise_id): Collection
+    {
+        return $this->invoicePatternService->filterInvoicePatterns(
+            filters: [
+                'enterprise_id' => $enterprise_id,
+                'enterprise_id_mode' => 'eq',
+            ],
+        );
+    }
+
+    protected function setPatterns(): void
+    {
+        $enterprise_id = $this->data['enterprise_id'];
+        $patterns = $this->getPatterns($enterprise_id);
+
+        $this->price_pattern = $patterns->where('type', PatternInvoiceTypeEnum::PriceLine->value)->first()?->pattern;
+        $this->product_pattern = $patterns->where('type', PatternInvoiceTypeEnum::ProductLine->value)->first()?->pattern;
+    }
+
     protected function processListProduct(): void
     {
         $products = [];
-        $pattern = $this->data['invoice_pattern'];
+        $pattern = $this->product_pattern;
         foreach ($this->data['photos_product_list'] as $key => $value) {
-            $products = array_merge(
-                //
-                $this->invoiceOcrService->extractProductIdsFromInvoiceImage(path: $value->path(), pattern: $pattern, ids_are_numeric: !is_null($pattern)),
-                $products,
-            );
+            $products = array_merge($this->invoiceOcrService->extractProductIdsFromInvoiceImage(path: $value->path(), pattern: $pattern, ids_are_numeric: !is_null($pattern)), $products);
         }
 
         if (empty($products)) {
@@ -172,94 +195,99 @@ new class extends Component implements HasSchemas, HasActions {
             })
             ->toArray();
 
-        $newDataForm = [
+        $this->form->fill([
             'invoice_number' => $this->data['invoice_number'],
             'enterprise_id' => $this->data['enterprise_id'],
             'paid_at' => $this->data['paid_at'],
-            'invoice_pattern' => $this->data['invoice_pattern'],
             'products' => array_map(
                 fn($product) => [
                     'product_id' => $product['id'],
                     'qty_per_bundle' => $product['qty_per_bundle'],
                     'bundles_quantity' => 0,
+                    'unit_quantity' => 0,
                     'quantity' => 0,
                 ],
                 $filteredProducts,
             ),
-        ];
-
-        $this->form->fill($newDataForm);
+        ]);
     }
 
     protected function processListPrices(): void
     {
         $prices = [];
         foreach ($this->data['photos_prices_list'] as $key => $value) {
-            $prices = array_merge(
-                //
-                $this->invoiceOcrService->extractPricesFromInvoiceImage(path: $value->path()),
-                $prices,
-            );
+            $prices = array_merge($this->invoiceOcrService->extractPricesFromInvoiceImage(path: $value->path(), pattern: $this->price_pattern), $prices);
         }
 
         if (empty($prices)) {
             return;
         }
 
-        $this->price_options = $prices;
+        $this->price_options = array_unique($prices);
+    }
+
+    protected function getRulesFromField(string $field, ?array $params = null): array
+    {
+        return is_null($this->invoice) ? CreateInvoiceRequest::getRulesFromField($field, $params) : UpdateInvoiceRequest::getRulesFromField($field, $params);
     }
 
     public function form(Schema $form): Schema
     {
         return $form->statePath('data')->schema([
-            //
             SComponents\Wizard::make([
                 SComponents\Wizard\Step::make('Information from physical invoice')
                     ->columns(2)
                     ->schema([
-                        //
-                        Components\TextInput::make('invoice_number')->label('Invoice Number'),
                         Components\Select::make('enterprise_id')
-                            //
+
                             ->label('Enterprise')
                             ->reactive()
                             ->searchable()
                             ->getSearchResultsUsing(fn(string $search): array => $this->getEnterprises($search))
                             ->getOptionLabelUsing(fn($value): ?string => $this->enterpriseService->getEnterpriseById($value)?->name)
                             ->live()
-                            ->afterStateUpdated(function (string $state, Set $set) {
-                                $set('invoice_pattern', null);
-                            })
+                            ->rules($this->getRulesFromField('enterprise_id'))
+                            ->columnSpanFull()
                             ->required(),
-                        Components\DatePicker::make('paid_at')->label('Payment Date')->required(),
-                        Components\Select::make('invoice_pattern')
-                            //
-                            ->options(function (Get $get) {
-                                return !is_null($get('enterprise_id')) ? $this->getInvoicePatterns($get('enterprise_id')) : [];
-                            })
-                            ->label('Invoice Pattern')
-                            ->disabled(fn(Get $get): bool => is_null($get('enterprise_id')))
-                            ->required(fn(Get $get): bool => !empty($get('photos_product_list'))),
+
+                        Components\TextInput::make('invoice_number')
+
+                            ->rules($this->getRulesFromField('invoice_number', ['enterprise_id' => $this->data['enterprise_id'] ?? null]))
+                            ->label('Invoice Number'),
+
+                        Components\DatePicker::make('paid_at')
+
+                            ->rules($this->getRulesFromField('paid_at'))
+                            ->label('Payment Date')
+                            ->required(),
+
                         Components\FileUpload::make('photos_product_list')
+
+                            ->dehydrated(false)
                             ->label('List Products')
                             ->columnSpanFull()
                             ->disk('local')
                             ->multiple()
                             ->maxFiles(5)
                             ->image()
-                            ->imageEditor() //
+                            ->imageEditor()
                             ->helperText('Select only the part you wish to scan. If you need to edit the image, use the editor. Upload a images (Max 5MB). Accepted formats: .jpg, .jpeg, .png, .webp'),
+
                         Components\FileUpload::make('photos_prices_list')
+
                             ->label('List Prices')
                             ->columnSpanFull()
                             ->disk('local')
                             ->multiple()
                             ->maxFiles(5)
                             ->image()
-                            ->imageEditor() //
+                            ->imageEditor()
+                            ->dehydrated(false)
                             ->helperText('Select only the part you wish to scan. If you need to edit the image, use the editor. Upload a images (Max 5MB). Accepted formats: .jpg, .jpeg, .png, .webp'),
                     ])
                     ->afterValidation(function () {
+                        $this->setPatterns();
+
                         if (!empty($this->data['photos_prices_list'])) {
                             $this->processListPrices();
                         }
@@ -269,15 +297,14 @@ new class extends Component implements HasSchemas, HasActions {
                         }
                     }),
                 SComponents\Wizard\Step::make('Register Invoice')->schema([
-                    //
                     Components\Repeater::make('products')
-                        ->columns(3)
+                        ->columns(4)
                         ->schema([
-                            //
                             Components\Select::make('product_id')
-                                //
                                 ->label('Product')
+                                ->rules($this->getRulesFromField('products.*.product_id'))
                                 ->searchable()
+                                ->distinct()
                                 ->getSearchResultsUsing(fn(string $search): array => $this->getProducts($search))
                                 ->getOptionLabelUsing(fn($value): ?string => $this->productService->getProductById($value)?->name)
                                 ->live()
@@ -289,31 +316,62 @@ new class extends Component implements HasSchemas, HasActions {
 
                                     $set('qty_per_bundle', $qty_per_bundle);
                                     $set('bundles_quantity', 0);
+                                    $set('unit_quantity', 0);
                                     $set('quantity', 0);
                                 })
-                                ->columnSpan(2)
+                                ->columnSpan(3)
                                 ->required(),
+
                             Components\TextInput::make('unit_price')
-                                //
+
                                 ->datalist(fn() => $this->price_options)
+                                ->rules($this->getRulesFromField('products.*.unit_price'))
                                 ->prefix('$')
                                 ->inputMode('decimal')
                                 ->numeric()
                                 ->columnSpan(1)
                                 ->required(),
-                            Components\TextInput::make('qty_per_bundle')->numeric()->default(1)->disabled(),
+
+                            Components\TextInput::make('qty_per_bundle')
+
+                                ->numeric()
+                                ->default(1)
+                                ->readOnly()
+                                ->dehydrated(false),
+
                             Components\TextInput::make('bundles_quantity')
-                                //
+
                                 ->numeric()
                                 ->default(0)
-                                ->required(),
+                                ->dehydrated(false)
+                                ->live()
+                                ->afterStateUpdated(function (?string $state, Set $set, Get $get) {
+                                    if (is_numeric($state)) {
+                                        $set('quantity', $state * $get('qty_per_bundle') + $get('unit_quantity'));
+                                    }
+                                }),
+                            Components\TextInput::make('unit_quantity')
+
+                                ->numeric()
+                                ->dehydrated(false)
+                                ->live()
+                                ->afterStateUpdated(function (?string $state, Set $set, Get $get) {
+                                    if (is_numeric($state)) {
+                                        $set('quantity', $state + $get('qty_per_bundle') * $get('bundles_quantity'));
+                                    }
+                                })
+                                ->default(0),
+
                             Components\TextInput::make('quantity')
-                                //
+
+                                ->label('Total Quantity')
+                                ->rules($this->getRulesFromField('products.*.quantity'))
+                                ->readOnly()
                                 ->numeric()
                                 ->default(0)
                                 ->required(),
                         ]),
-                    Components\Textarea::make('observations'),
+                    Components\Textarea::make('observations')->rules($this->getRulesFromField('observations')),
                 ]),
             ])->submitAction(
                 new HtmlString(
