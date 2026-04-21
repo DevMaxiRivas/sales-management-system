@@ -16,6 +16,8 @@ class TesseractOcrReader implements OcrReaderInterface
 
         $reader = new TesseractOCR($path);
 
+        $reader->dpi(300);
+
         if ($language) {
             $reader->lang($language);
         }
