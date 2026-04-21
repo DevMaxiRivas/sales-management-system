@@ -39,4 +39,9 @@ class Invoice extends Model
     {
         return $this->belongsToMany(Product::class, 'invoice_product')->withPivot('quantity', 'unit_price');
     }
+
+    public function getTotalPriceAttribute(): float
+    {
+        return $this->products()->get()->sum(fn(Product $product) => $product->pivot->quantity * $product->pivot->unit_price);
+    }
 }
