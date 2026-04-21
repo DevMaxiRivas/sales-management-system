@@ -23,7 +23,7 @@ class EloquentEnterpriseRepository extends Repository implements EnterpriseRepos
     }
     public function attachProducts(Enterprise $enterprise, array $data): void
     {
-        $enterprise->Enterprises()->attach($data);
+        $enterprise->products()->attach($data);
     }
 
     public function filter(EnterpriseFilterDTO $dto, int $perPage = 15, bool $paginate = false): LengthAwarePaginator|Collection
