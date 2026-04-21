@@ -4,10 +4,9 @@ namespace App\Http\Requests\Invoice;
 
 use App\Http\Requests\BaseModelFormRequest;
 use Illuminate\Contracts\Validation\ValidationRule;
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class CreateInvoiceRequest extends BaseModelFormRequest
+class UpdateInvoiceRequest extends BaseModelFormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -30,25 +29,6 @@ class CreateInvoiceRequest extends BaseModelFormRequest
     public static function getRules(?array $params = null): array
     {
         return [
-            'enterprise_id' => [
-                'required',
-                'integer',
-                'exists:enterprises,id'
-            ],
-            'invoice_number' => [
-                'sometimes',
-                'nullable',
-                'numeric',
-                Rule::unique('invoices', 'invoice_number')
-                    ->when(
-                        isset($params['enterprise_id']),
-                        function ($query) use ($params) {
-                            return $query->where('enterprise_id', $params['enterprise_id']);
-                        }
-                    )
-                    ->withoutTrashed()
-            ],
-            'paid_at' => ['required', 'date'],
             'products.*.product_id' => [
                 'required',
                 'integer',
