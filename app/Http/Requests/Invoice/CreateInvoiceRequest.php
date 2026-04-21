@@ -50,7 +50,6 @@ class CreateInvoiceRequest extends BaseModelFormRequest
                 Rule::exists('products', 'id')->withoutTrashed()
             ],
             'products.*.quantity' => ['required', 'integer', 'min:0'],
-            'products.*.bundles_quantity' => ['required', 'integer', 'min:0'],
             'products.*.unit_price' => ['required', 'decimal:2', 'gt:0'],
             'observations' => ['nullable', 'string'],
         ];

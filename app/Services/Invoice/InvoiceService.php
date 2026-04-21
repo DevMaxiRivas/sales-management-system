@@ -46,24 +46,10 @@ class InvoiceService implements InvoiceServiceInterface
     {
         if (!isset($data["products"])) return [];
 
-        $productsWithBundles = array_filter($data["products"], fn($product) => isset($product["bundles_quantity"]) && $product["bundles_quantity"] > 0);
-
-        $qtysPerBundle = $this->productService->filterProducts([
-            "product_ids" => array_map(fn($product) => $product["product_id"], $productsWithBundles),
-            "product_ids_mode" => "in",
-        ])
-            ->pluck("qty_per_bundle", "id")
-            ->toArray();
-
         $processedData = [];
         foreach ($data["products"] as $product) {
             $processedData[$product['product_id']] = [
-                'quantity' =>
-                $product['quantity'] + (
-                    isset($qtysPerBundle[$product['product_id']]) ?
-                    $product['bundles_quantity'] * $qtysPerBundle[$product['product_id']]
-                    : 0
-                ),
+                'quantity' => $product['quantity'],
                 'unit_price' => $product['unit_price'],
             ];
         }
