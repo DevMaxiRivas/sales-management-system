@@ -24,4 +24,6 @@ interface RepositoryInterface
     public function update(Model $product, array $data): ?Model;
 
     public function delete(int $id): bool;
+
+    public function updateRecordsById(array $data, array $cols): ?int;
 }

@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 
 abstract class Repository implements RepositoryInterface
 {
@@ -68,5 +69,36 @@ abstract class Repository implements RepositoryInterface
         if (!empty($toDetach)) {
             $relation->detach($toDetach);
         }
+    }
+    public function updateRecordsById(array $data, array $cols): ?int
+    {
+        if (count(array_diff($cols, $this->model->getFillable())) > 0) {
+            throw new \Exception('Error UpdateRecordsById: Invalid columns, not fillable');
+        }
+
+        $updates = [];
+        foreach ($cols as $col) {
+            $thenSentences = '';
+            foreach ($data as $id => $colValues) {
+                if (!isset($colValues[$col])) continue;
+                $thenSentences .= " WHEN {$id} THEN {$colValues[$col]} ";
+            }
+
+            $updates[$col] = DB::raw(
+                'CASE id ' .
+                    $thenSentences .
+                    ' END'
+            );
+        }
+
+        $updates['updated_at'] = now();
+
+        $affectedRows = DB::table($this->model->getTable())
+            ->whereIn($this->model->getKeyName(), array_keys($data))
+            ->update($updates);
+
+        if (is_integer($affectedRows)) return $affectedRows;
+
+        return null;
     }
 }
