@@ -26,4 +26,6 @@ interface ProductServiceInterface
     public function deleteProduct(int $id): bool;
 
     public function filterProducts(array $filters, int $perPage = 15, bool $paginate = false): LengthAwarePaginator|Collection;
+
+    public function updateStockProducts(array $data): int;
 }
