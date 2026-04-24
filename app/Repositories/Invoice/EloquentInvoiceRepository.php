@@ -27,4 +27,14 @@ class EloquentInvoiceRepository extends Repository implements InvoiceRepositoryI
     {
         $invoice->products()->attach($data);
     }
+
+    public function syncProducts(Invoice $invoice, array $data): void
+    {
+        $invoice->products()->sync($data);
+    }
+
+    public function getInvoiceDetails(Invoice $invoice): Collection
+    {
+        return $invoice->products()->get([])->map(fn($product) => $product->pivot);
+    }
 }

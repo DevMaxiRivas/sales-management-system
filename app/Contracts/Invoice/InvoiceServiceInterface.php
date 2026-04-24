@@ -15,9 +15,9 @@ interface InvoiceServiceInterface
 
     public function paginateInvoices(int $perPage = 15, array $columns = ['*']): LengthAwarePaginator;
 
-    public function createInvoice(array $data): Invoice;
+    public function createInvoice(array $data): ?Invoice;
 
-    public function updateInvoice(int $id, array $data): Invoice;
+    public function updateInvoice(int $id, array $data): ?Invoice;
 
     public function deleteInvoice(int $id): bool;
 
