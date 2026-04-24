@@ -7,6 +7,7 @@ use App\Filament\Resources\Invoices\Pages\EditInvoice;
 use App\Filament\Resources\Invoices\Pages\ListInvoices;
 use App\Filament\Resources\Invoices\Pages\RegisterInvoicePage;
 use App\Filament\Resources\Invoices\Pages\RegisterInvoicePage2;
+use App\Filament\Resources\Invoices\Pages\UpdateInvoicePage;
 use App\Filament\Resources\Invoices\Pages\ViewInvoice;
 use App\Filament\Resources\Invoices\Schemas\InvoiceForm;
 use App\Filament\Resources\Invoices\Schemas\InvoiceInfolist;
@@ -54,6 +55,7 @@ class InvoiceResource extends Resource
             'index' => ListInvoices::route('/'),
             // 'create' => CreateInvoice::route('/create'),
             'create' => RegisterInvoicePage::route('/create'),
+            'edit' => UpdateInvoicePage::route('/{record}/edit'),
             'view' => ViewInvoice::route('/{record}'),
             // 'edit' => EditInvoice::route('/{record}/edit'),
         ];

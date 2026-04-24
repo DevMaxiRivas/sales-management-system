@@ -71,7 +71,32 @@ new class extends Component implements HasSchemas, HasActions {
 
     public function mount(): void
     {
-        $this->form->fill();
+        if (is_null($this->invoice)) {
+            $this->form->fill();
+            return;
+        }
+
+        $data = [
+            'invoice_number' => $this->invoice->invoice_number,
+            'enterprise_id' => $this->invoice->enterprise_id,
+            'paid_at' => $this->invoice->paid_at,
+            'products' => $this->invoice
+                ->products()
+                ->get()
+                ->map(
+                    fn($product) => [
+                        'product_id' => $product->id,
+                        'unit_price' => $product->pivot->unit_price,
+                        'qty_per_bundle' => $product->qty_per_bundle,
+                        'bundles_quantity' => intdiv($product->pivot->quantity, $product->qty_per_bundle),
+                        'unit_quantity' => $product->pivot->quantity % $product->qty_per_bundle,
+                        'quantity' => $product->pivot->quantity,
+                    ],
+                )
+                ->toArray(),
+        ];
+
+        $this->form->fill($data);
     }
 
     protected function processedQRInfo($data): array
@@ -90,14 +115,24 @@ new class extends Component implements HasSchemas, HasActions {
 
     public function save()
     {
-        $record = $this->invoiceService->createInvoice($this->form->getState());
+        if (is_null($this->invoice)) {
+            $record = $this->invoiceService->createInvoice($this->form->getState());
+            $operation = 'created';
+        } else {
+            $record = $this->invoiceService->updateInvoice($this->invoice->id, $this->form->getState());
+            $operation = 'updated';
+        }
+
         if ($record instanceof Invoice) {
             Notification::make()
-                ->title('Invoice #' . $record->id . ' saved successfully')
+                ->title('Invoice #' . $record->id . ' ' . $operation . ' successfully')
                 ->success()
                 ->send();
+
+            $this->form->fill();
+        } else {
+            Notification::make()->title('Error saving invoice')->danger()->send();
         }
-        $this->form->fill();
     }
 
     protected function getEnterprises(string $search): array
@@ -376,7 +411,7 @@ new class extends Component implements HasSchemas, HasActions {
             ])->submitAction(
                 new HtmlString(
                     Blade::render(
-                        <<<BLADE
+                        '
                         <x-filament::button
                             type="submit"
                             size="sm"
@@ -384,10 +419,10 @@ new class extends Component implements HasSchemas, HasActions {
                             wire:click="save"
                             wire:loading.aKttr="disabled"
                         >
-                            Register
+                            {{ is_null($invoice) ? "Register" : "Update" }}
                         </x-filament::button>
-                        BLADE
-                        ,
+                        ',
+                        ['invoice' => $this->invoice],
                     ),
                 ),
             ),
