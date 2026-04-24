@@ -7,5 +7,5 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
 
 class InvoiceProduct extends Pivot
 {
-    public $table = 'invoice_products';
+    public $table = 'invoice_product';
 }
