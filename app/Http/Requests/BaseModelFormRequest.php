@@ -11,7 +11,8 @@ abstract class BaseModelFormRequest extends FormRequest
     {
         $rules = static::getRules($params);
         if (!isset($rules[$field])) {
-            throw new \RuntimeException("No se encontraron reglas para el campo {$field} en la validación.");
+            // throw new \RuntimeException("No se encontraron reglas para el campo {$field} en la validación.");
+            return [];
         }
 
         if (is_string($rules[$field])) {
@@ -22,6 +23,6 @@ abstract class BaseModelFormRequest extends FormRequest
             return $rules[$field];
         }
 
-        throw new \RuntimeException("No se encontraron reglas para el campo {$field} en la validación.");
+        throw new \RuntimeException("Ocurrio un error al obtener las reglas para el campo {$field} en la validación.");
     }
 }
