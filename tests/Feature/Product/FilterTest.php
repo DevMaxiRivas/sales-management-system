@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Product;
 
+use App\Models\Enterprise;
 use App\Models\Product;
 use App\Repositories\Product\EloquentProductRepository;
 use App\Services\Product\ProductService;
@@ -29,22 +30,22 @@ class FilterTest extends TestCase
         parent::setUp();
         $this->seedBasicData();
 
-        $repo = new EloquentProductRepository();
+        $repo = new EloquentProductRepository(new Product());
 
         $this->productService = new ProductService($repo);
     }
-    public function test_example(): void
+    public function test_products_in_enterprise(): void
     {
         $enterprise_id = 1;
         $products = $this->productService
             ->filterProducts(
                 filters: [
                     'enterprise_id' => $enterprise_id,
-                    'enterprise_id_mode' => 'ne',
+                    'enterprise_id_mode' => 'eq',
                 ],
             )
             ->pluck('name', 'id');
 
-        $this->assertCount(4, $products);
+        $this->assertCount(5, $products);
     }
 }
