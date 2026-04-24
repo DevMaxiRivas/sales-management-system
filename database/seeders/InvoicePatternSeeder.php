@@ -20,7 +20,7 @@ class InvoicePatternSeeder extends Seeder
                 "type" => 0,
                 "pattern" => '/^\*{0,1}[0-9]{13}$/',
                 "created_at" => "2026-04-15 19:35:44",
-                "updated_at" => "2026-04-15 19:35:44",
+                "updated_at" => "2026-04-20 18:49:00",
                 "deleted_at" => null
             ),
             array(
@@ -39,6 +39,24 @@ class InvoicePatternSeeder extends Seeder
                 "pattern" => '/^[0-9]{7}$/',
                 "created_at" => "2026-04-15 22:31:41",
                 "updated_at" => "2026-04-15 22:31:50",
+                "deleted_at" => null
+            ),
+            array(
+                "id" => 7,
+                "enterprise_id" => 2,
+                "type" => 1,
+                "pattern" => "/[\d]+(\d{3})/",
+                "created_at" => "2026-04-19 18:19:05",
+                "updated_at" => "2026-04-19 18:19:05",
+                "deleted_at" => null
+            ),
+            array(
+                "id" => 8,
+                "enterprise_id" => 3,
+                "type" => 1,
+                "pattern" => "/[\d]+(\d{4})/",
+                "created_at" => "2026-04-19 18:19:26",
+                "updated_at" => "2026-04-19 18:19:26",
                 "deleted_at" => null
             )
         );

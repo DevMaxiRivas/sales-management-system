@@ -38,6 +38,14 @@ class EnterpriseSeeder extends Seeder
                 "created_at" => "2026-04-15 21:40:19",
                 "updated_at" => "2026-04-15 21:40:19",
                 "deleted_at" => null
+            ),
+            array(
+                "id" => 4,
+                "name" => "MAXICONSUMO",
+                "tax_id" => "30663005843",
+                "created_at" => "2026-04-20 20:06:42",
+                "updated_at" => "2026-04-20 20:06:42",
+                "deleted_at" => null
             )
         );
 
@@ -70,6 +78,11 @@ class EnterpriseSeeder extends Seeder
                 "product_enterprise_id" => 7790250015857
             ),
             array(
+                "product_id" => 4,
+                "enterprise_id" => 4,
+                "product_enterprise_id" => 20959
+            ),
+            array(
                 "product_id" => 5,
                 "enterprise_id" => 2,
                 "product_enterprise_id" => 7798049449876
@@ -93,6 +106,11 @@ class EnterpriseSeeder extends Seeder
                 "product_id" => 9,
                 "enterprise_id" => 3,
                 "product_enterprise_id" => 31696
+            ),
+            array(
+                "product_id" => 9,
+                "enterprise_id" => 4,
+                "product_enterprise_id" => 578
             ),
             array(
                 "product_id" => 10,
@@ -123,6 +141,36 @@ class EnterpriseSeeder extends Seeder
                 "product_id" => 15,
                 "enterprise_id" => 1,
                 "product_enterprise_id" => 147490
+            ),
+            array(
+                "product_id" => 16,
+                "enterprise_id" => 2,
+                "product_enterprise_id" => 7790250097648
+            ),
+            array(
+                "product_id" => 17,
+                "enterprise_id" => 2,
+                "product_enterprise_id" => 7791290792043
+            ),
+            array(
+                "product_id" => 18,
+                "enterprise_id" => 2,
+                "product_enterprise_id" => 7790250054962
+            ),
+            array(
+                "product_id" => 19,
+                "enterprise_id" => 4,
+                "product_enterprise_id" => 16846
+            ),
+            array(
+                "product_id" => 20,
+                "enterprise_id" => 4,
+                "product_enterprise_id" => 16845
+            ),
+            array(
+                "product_id" => 21,
+                "enterprise_id" => 4,
+                "product_enterprise_id" => 3841
             )
         );
 

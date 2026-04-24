@@ -72,7 +72,7 @@ class ProductSeeder extends Seeder
             array(
                 "id" => 6,
                 "bar_code" => "3422334234",
-                "name" => "JABON GRANBY BE ROSAS C\\\/BICARBONATO 3KG",
+                "name" => "JABON GRANBY BE ROSAS C\\\\\/BICARBONATO 3KG",
                 "stock" => 0,
                 "min_stock" => null,
                 "qty_per_bundle" => 4,
@@ -83,7 +83,7 @@ class ProductSeeder extends Seeder
             array(
                 "id" => 7,
                 "bar_code" => "32423234234",
-                "name" => "JABON GRANBY BE LIMON C\\\/BICARBONATO 3KG",
+                "name" => "JABON GRANBY BE LIMON C\\\\\/BICARBONATO 3KG",
                 "stock" => 0,
                 "min_stock" => null,
                 "qty_per_bundle" => 4,
@@ -116,7 +116,7 @@ class ProductSeeder extends Seeder
             array(
                 "id" => 10,
                 "bar_code" => "3892839238911",
-                "name" => "JABON GRANBY L.A MANO LIMON C\\\/BICARBONATO 3KG",
+                "name" => "JABON GRANBY L.A MANO LIMON C\\\\\/BICARBONATO 3KG",
                 "stock" => 0,
                 "min_stock" => null,
                 "qty_per_bundle" => 1,
@@ -177,6 +177,72 @@ class ProductSeeder extends Seeder
                 "qty_per_bundle" => 1,
                 "created_at" => "2026-04-15 22:00:45",
                 "updated_at" => "2026-04-15 22:00:45",
+                "deleted_at" => null
+            ),
+            array(
+                "id" => 16,
+                "bar_code" => "9032023032",
+                "name" => "LADIYSOFT T.NOR.C\/A X8 SUAV EXT ALG",
+                "stock" => 0,
+                "min_stock" => null,
+                "qty_per_bundle" => 54,
+                "created_at" => "2026-04-20 18:53:32",
+                "updated_at" => "2026-04-20 18:53:32",
+                "deleted_at" => null
+            ),
+            array(
+                "id" => 17,
+                "bar_code" => "894384",
+                "name" => "ALA MATIC P\/DILUIR X 500ML",
+                "stock" => 0,
+                "min_stock" => null,
+                "qty_per_bundle" => 12,
+                "created_at" => "2026-04-20 18:54:03",
+                "updated_at" => "2026-04-20 18:54:03",
+                "deleted_at" => null
+            ),
+            array(
+                "id" => 18,
+                "bar_code" => "90230239",
+                "name" => "ELITE PAÑUELOS T.H PACK 6X10",
+                "stock" => 0,
+                "min_stock" => null,
+                "qty_per_bundle" => 35,
+                "created_at" => "2026-04-20 18:54:31",
+                "updated_at" => "2026-04-20 18:54:31",
+                "deleted_at" => null
+            ),
+            array(
+                "id" => 19,
+                "bar_code" => "34902893093",
+                "name" => "ZORRO MATIC JAB PVO 3KG",
+                "stock" => 0,
+                "min_stock" => null,
+                "qty_per_bundle" => 6,
+                "created_at" => "2026-04-20 20:03:08",
+                "updated_at" => "2026-04-20 20:03:08",
+                "deleted_at" => null
+            ),
+            array(
+                "id" => 20,
+                "bar_code" => "324234234",
+                "name" => " ZORRO REG CLAS. JAB PVO 3KG",
+                "stock" => 0,
+                "min_stock" => null,
+                "qty_per_bundle" => 6,
+                "created_at" => "2026-04-20 20:03:53",
+                "updated_at" => "2026-04-20 20:03:53",
+                "deleted_at" => null
+            ),
+            array(
+                "id" => 21,
+                "bar_code" => "32442342",
+                "name" => " ACE LAVA A MANO JAB PVO 800GR",
+                "stock" => 0,
+                "min_stock" => null,
+                "qty_per_bundle" => 20,
+                "created_at" => "2026-04-20 20:04:41",
+                "updated_at" => "2026-04-20 20:04:41",
                 "deleted_at" => null
             )
         );
