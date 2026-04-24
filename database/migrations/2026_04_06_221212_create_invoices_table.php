@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreignId('enterprise_id')->references('id')->on('enterprises')->onDelete('cascade');
 
-            $table->string('invoice_number');
+            $table->string('invoice_number')->nullable();
             $table->text('observations')->nullable();
             $table->timestamps();
             $table->softDeletes();
