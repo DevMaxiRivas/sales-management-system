@@ -70,7 +70,7 @@ class ProductForm
                     ->rules(
                         fn(Get $get) =>
                         self::getRules(
-                            field: 'min_stock',
+                            field: 'qty_per_bundle',
                             params: ['recordId' => $get('id')],
                             create: is_null($get('id'))
                         )

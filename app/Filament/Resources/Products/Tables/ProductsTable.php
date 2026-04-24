@@ -19,6 +19,7 @@ class ProductsTable
                     ->searchable(),
                 TextColumn::make('bar_code'),
                 TextColumn::make('stock'),
+                TextColumn::make('updated_at')->dateTime()->since(),
             ])
             ->filters([
                 //
