@@ -29,7 +29,8 @@ class InvoiceInfolist
 
                         Infolists\Components\TextEntry::make('created_at')
                             ->label('Created At')
-                            ->dateTime('d/m/Y H:i'),
+                            ->dateTime('d/m/Y H:i')
+                            ->timeZone('America/Argentina/Buenos_Aires'),
 
                         Infolists\Components\TextEntry::make('paid_at')
                             ->label('Paid At')
