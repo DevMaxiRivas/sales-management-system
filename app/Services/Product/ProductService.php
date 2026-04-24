@@ -68,4 +68,20 @@ class ProductService implements ProductServiceInterface
             paginate: $paginate
         );
     }
+
+    public function updateStockProducts(array $data): int
+    {
+        $newData = [];
+        $this->repository->getProductsByIds(array_keys($data))
+            ->each(function (Product $product) use ($data, &$newData) {
+                $newData[$product->id]['stock'] = $product->stock + $data[$product->id]['quantity'];
+            });
+
+        $updatedRows = $this->repository->updateRecordsById(data: $newData, cols: ['stock']);
+        if (is_null($updatedRows)) {
+            throw new \RuntimeException('Error in ProductService method updateStockProducts: No rows updated');
+        }
+
+        return $updatedRows;
+    }
 }

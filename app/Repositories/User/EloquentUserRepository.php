@@ -9,54 +9,19 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
+use App\Repositories\Repository;
+use Illuminate\Database\Eloquent\Model;
 
-class EloquentUserRepository implements UserRepositoryInterface
+class EloquentUserRepository extends Repository implements UserRepositoryInterface
 {
-    public function query(): Builder
+    public function __construct(User $model)
     {
-        return User::query();
+        return parent::__construct($model);
     }
-
-    public function all(array $columns = ['*']): Collection
-    {
-        return $this->query()->get($columns);
-    }
-
-    public function paginate(int $perPage = 15, array $columns = ['*']): LengthAwarePaginator
-    {
-        return $this->query()->paginate($perPage, $columns);
-    }
-
-    public function findById(int $id): ?User
-    {
-        return $this->query()->find($id);
-    }
-
     public function findByEmail(string $email): ?User
     {
         return $this->query()->where('email', $email)->first();
     }
-
-    public function create(array $data): User
-    {
-        return $this->query()->create($data);
-    }
-
-    public function update(User $user, array $data): ?User
-    {
-        if ($user->update($data))
-            $user->refresh();
-
-        throw new \RuntimeException("No se pudo actualizar el registro con id {$user->id}.");
-    }
-
-    public function delete(int $id): bool
-    {
-        $user = $this->findById($id);
-
-        return $user ? $user->delete() : false;
-    }
-
     public function getCurrentUser(): User
     {
         return Auth::user();
