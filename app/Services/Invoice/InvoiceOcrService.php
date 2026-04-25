@@ -22,7 +22,7 @@ class InvoiceOcrService
             // remove empty lines
             $data = array_values(array_filter(array_map('trim', $lines)));
         } catch (\Throwable $th) {
-            Log::info($th->getMessage());
+            Log::error($th->getMessage());
             $data = [];
         } finally {
             return $data;
@@ -40,8 +40,7 @@ class InvoiceOcrService
                             if (count(preg_grep($pattern, [$element])) == 0) {
                                 return null;
                             }
-
-                            return preg_replace('/[^0-9]/', '', $element);
+                            return $element;
                         },
                         array: $data
                     ),
@@ -87,28 +86,35 @@ class InvoiceOcrService
         return array_map(fn(string $element) => str_replace(' ', '', $element), $data);
     }
 
+    protected function keepOnlyNumbers(array $data): array
+    {
+        return
+            array_values(
+                array_filter(
+                    array_map(
+                        fn(string $element) => preg_replace('/[^0-9]/', '', $element),
+                        $data
+                    ),
+                    fn($element) => !empty($element)
+                )
+            );
+    }
+
     public function extractProductIdsFromInvoiceImage(string $path, ?string $language = 'spa', bool $ids_are_numeric = false, ?string $pattern = null): array
     {
         $data = $this->extractDataWithoutSpaces($path, $language);
+        // Quitar todos los caracteres no numericos
         if ($ids_are_numeric) {
+            $data = $this->keepOnlyNumbers($data);
             if (!is_null($pattern)) {
                 try {
                     return $this->filterDataByPattern($data, $pattern);
                 } catch (\Throwable $th) {
-                    Log::info('Error extracting product ids from invoice image: ' . $th->getMessage());
+                    Log::error('InvoiceOCRService - Method extractProductIdsFromInvoiceImage: Error extracting product ids from invoice image: ' . $th->getMessage());
                     return [];
                 }
             } else {
-                return
-                    array_values(
-                        array_filter(
-                            array_map(
-                                fn(string $element) => preg_replace('/[^0-9]/', '', $element),
-                                $data
-                            ),
-                            fn($element) => !empty($element)
-                        )
-                    );
+                return $data;
             }
         }
         return $data;
@@ -120,7 +126,7 @@ class InvoiceOcrService
         try {
             return $this->filterPricesByPattern($data, $pattern);
         } catch (\Throwable $th) {
-            Log::info('Error extracting prices from invoice image: ' . $th->getMessage());
+            Log::error('Error extracting prices from invoice image: ' . $th->getMessage());
             return [];
         }
     }
